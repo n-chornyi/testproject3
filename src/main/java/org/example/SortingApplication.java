@@ -21,6 +21,10 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
+/**
+ * The application implements and demonstrates
+ * the ability to sort using the "quicksort" algorithm
+ */
 public class SortingApplication {
 
     private IntroFrame introFrame;
