@@ -21,44 +21,62 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
-public class App {
+public class SortingApplication {
 
     private IntroFrame introFrame;
     private SortFrame sortFrame;
 
     public static void main(String[] args) {
-        new App().run();
+        new SortingApplication().run();
     }
 
+    /**
+     * Initialization fields {@link SortingApplication#introFrame}, {@link SortingApplication#sortFrame}
+     * Shows intro frame
+     */
     private void run() {
         introFrame = new IntroFrame(this);
         sortFrame = new SortFrame(this);
-        introFrame.setVisible(true);
+        showIntroFrame();
     }
 
-    public void showMain() {
+    /**
+     * Shows intro frame
+     */
+    public void showIntroFrame() {
         sortFrame.setVisible(false);
         introFrame.showFrame();
     }
 
-    public void showNumbers(int count) {
+    /**
+     * Shows sorting frame
+     */
+    public void showSortingFrame(int count) {
         introFrame.setVisible(false);
         sortFrame.setVisible(true);
-        sortFrame.generatePanelNumbers(count);
+        sortFrame.generatePanelCells(count);
     }
 
+    /**
+     * IntroFrame implements an application that creates and  displays a intro window
+     */
     class IntroFrame extends JFrame {
-        private final App app;
-        private final int height = 420;
-        private final int width = 600;
+
+        private final SortingApplication app;
 
         private JTextField fieldCountNumbers;
 
-        public IntroFrame(App app) {
+        /**
+         * Initialization field {@link IntroFrame#app}
+         */
+        public IntroFrame(SortingApplication app) {
             this.app = app;
             initFrame();
         }
 
+        /**
+         * Initialization intro frame
+         */
         private void initFrame() {
             JPanel jPanel = new JPanel();
             jPanel.setLayout(null);
@@ -94,7 +112,7 @@ public class App {
                     if (tempInt > 1000 || tempInt < 1) {
                         JOptionPane.showMessageDialog(null, "Enter numbers from 1 to 1000");
                     } else {
-                        this.app.showNumbers(tempInt);
+                        this.app.showSortingFrame(tempInt);
                     }
                 }
             });
@@ -104,21 +122,29 @@ public class App {
             setContentPane(jPanel);
             setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
+            int height = 420;
+            int width = 600;
             setMinimumSize(new Dimension(width, height));
-            setBounds((size.width/2) - (width/2), (size.height/2) - (height/2), width, height);
+            setBounds((size.width/2) - (width /2), (size.height/2) - (height /2), width, height);
             setResizable(false);
             setTitle("TestProject - Swing version");
             pack();
         }
 
+        /**
+         * Shows sorting frame
+         */
         public void showFrame() {
             fieldCountNumbers.setText("");
             setVisible(true);
         }
     }
 
+    /**
+     * IntroFrame implements an application that creates and  displays a sort window
+     */
     class SortFrame extends JFrame {
-        private final App app;
+        private final SortingApplication app;
 
         private final JPanel contentPane = new JPanel(null);
         private final JPanel panelCells = new JPanel();
@@ -137,14 +163,20 @@ public class App {
         private int[] arrayNumbers;
         private long timeDelay = 500;
         private boolean isWork = false;
-        private boolean isReverse = false;
+        private boolean isReverse = true;
 
-        public SortFrame(App app) {
+        /**
+         * Initialization field {@link IntroFrame#app}
+         */
+        public SortFrame(SortingApplication app) {
             this.app = app;
-            initFrame();
+            initializationFrame();
         }
 
-        private void initFrame() {
+        /**
+         * Initialization sort frame
+         */
+        private void initializationFrame() {
             buttonSort = new JButton("Sort");
             buttonSort.setBounds(650,150,120,30);
             buttonSort.addActionListener( a -> {
@@ -174,7 +206,7 @@ public class App {
             buttonReset = new JButton("Reset");
             buttonReset.setBounds(650,200,120,30);
             buttonReset.addActionListener(a -> {
-                app.showMain();
+                app.showIntroFrame();
             });
             String builder = "<html>" +
                     "Enter speed <br>" +
@@ -202,7 +234,6 @@ public class App {
             scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
             scrollPane.setBounds(25, 75, 600, 360);
             contentPane.add(scrollPane);
-
             contentPane.add(buttonSort);
             contentPane.add(buttonReset);
             contentPane.add(labelSpeed);
@@ -218,19 +249,26 @@ public class App {
             pack();
         }
 
-        public void generatePanelNumbers(int count) {
+        /**
+         * Updates a panel cells
+         */
+        public void generatePanelCells(int count) {
             countNumbers = count;
-            arrayNumbers = generateArrayNumbers();
             panelCells.removeAll();
-            generateButtons();
+            generateCells();
             panelCells.setLayout(new BoxLayout(panelCells, BoxLayout.X_AXIS));
-            //panelCells.setSize(400,400);
             panelCells.repaint();
             panelCells.revalidate();
         }
 
-        private void generateButtons() {
+        /**
+         * Creates a new cells
+         * Writes values to cells
+         * Adds to panel for visibility
+         */
+        private void generateCells() {
             arrayCells.clear();
+            arrayNumbers = generateArrayNumbers();
             int temp = 0;
             for (int i = 0; i <= countNumbers / 10; i++) {
                 Box box = Box.createVerticalBox();
@@ -249,7 +287,7 @@ public class App {
                         if (!isWork) {
                             if (Integer.parseInt(l.getActionCommand()) < 31) {
                                 countNumbers = Integer.parseInt(l.getActionCommand());
-                                generatePanelNumbers(countNumbers);
+                                generatePanelCells(countNumbers);
                             } else {
                                 JOptionPane.showMessageDialog(null, "Please select a value smaller or equal to 30.");
                             }
@@ -263,6 +301,9 @@ public class App {
             }
         }
 
+        /**
+         * Creates cell values
+         */
         private int[] generateArrayNumbers() {
             Random random = new Random();
             int[] tempCollection = new int[countNumbers];
@@ -273,7 +314,10 @@ public class App {
             return tempCollection;
         }
 
-        public void quickSort(int[] array, int low, int high) {
+        /**
+         * Sort cells using an algorithm "quicksort"
+         */
+        public void reverseQuickSort(int[] array, int low, int high) {
             if (array.length == 0)
                 return;
             if (low >= high)
@@ -312,12 +356,15 @@ public class App {
                 status = 1;
             }
             if (low < j)
-                quickSort(array, low, j);
+                reverseQuickSort(array, low, j);
             if (high > i)
-                quickSort(array, i, high);
+                reverseQuickSort(array, i, high);
         }
 
-        public void reverseQuickSort(int[] array, int low, int high) {
+        /**
+         * Reverse sort cells using an algorithm "quicksort"
+         */
+        public void quickSort(int[] array, int low, int high) {
             if (array.length == 0)
                 return;
             if (low >= high)
@@ -356,15 +403,21 @@ public class App {
                 status = 1;
             }
             if (low < j)
-                reverseQuickSort(array, low, j);
+                quickSort(array, low, j);
             if (high > i)
-                reverseQuickSort(array, i, high);
+                quickSort(array, i, high);
         }
 
+        /**
+         * Changes background color in cell
+         */
         private void changeBackgroundCell(int i, Color color) {
             arrayCells.get(i).setBackground(color);
         }
 
+        /**
+         * Swaps the values in 2 cells in places
+         */
         private void swapTextButtons(int[] array, int i, int j) {
             changeBackgroundCell(i, changeColor);
             changeBackgroundCell(j, changeColor);
@@ -379,6 +432,9 @@ public class App {
             changeBackgroundCell(j, defaultColor);
         }
 
+        /**
+         * Delays for a while after each iteration
+         */
         private void sleepSort() {
             try {
                 Thread.sleep(timeDelay);
